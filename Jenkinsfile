@@ -1,12 +1,9 @@
-Set-Content -Path Jenkinsfile -Encoding ascii -Value @'
 pipeline {
     agent none
-
     environment {
         IMAGE = 'ankush1223/webapp'
-        TAG   = "${BRANCH_NAME}-${BUILD_NUMBER}"
+        TAG   = "${env.BRANCH_NAME.replace('/', '-')}-${BUILD_NUMBER}"
     }
-
     stages {
         stage('build') {
             agent { label 'built-in' }
@@ -15,7 +12,6 @@ pipeline {
                 sh 'docker build -t $IMAGE:$TAG .'
             }
         }
-
         stage('test') {
             agent { label 'built-in' }
             steps {
@@ -32,7 +28,6 @@ pipeline {
                 }
             }
         }
-
         stage('prod') {
             when { branch 'master' }
             stages {
@@ -62,4 +57,3 @@ pipeline {
         }
     }
 }
-'@
