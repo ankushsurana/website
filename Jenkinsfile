@@ -18,8 +18,13 @@ pipeline {
                 sh """
                     docker rm -f test-web || true
                     docker run -d --name test-web -p 8081:80 $IMAGE:$TAG
-                    sleep 5
-                    curl -f http://localhost:8081
+                    for i in 1 2 3 4 5 6; do
+                        curl -fs http://localhost:8081 > /dev/null && exit 0
+                        sleep 5
+                    done
+                    docker ps -a
+                    docker logs test-web
+                    exit 1
                 """
             }
             post {
